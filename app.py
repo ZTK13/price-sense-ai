@@ -411,11 +411,12 @@ st.markdown("""
 
 st.markdown("""
 <style>
-.float-toggle {
+/* Floating sidebar toggle */
+.custom-toggle {
     position: fixed;
     top: 80px;
     left: 10px;
-    z-index: 1000;
+    z-index: 9999;
     background: #1e293b;
     color: white;
     border-radius: 8px;
@@ -425,8 +426,8 @@ st.markdown("""
 }
 </style>
 
-<div class="float-toggle" onclick="
-    const btn = window.parent.document.querySelector('[data-testid=\"collapsedControl\"]');
+<div class="custom-toggle" onclick="
+    const btn = window.parent.document.querySelector('[data-testid=\\"collapsedControl\\"]');
     if (btn) btn.click();
 ">
 ☰
@@ -441,18 +442,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def collapse_sidebar():
-    st.markdown(
-        """
+    st.markdown("""
         <script>
-        const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar && sidebar.getAttribute("aria-expanded") === "true") {
+        setTimeout(() => {
             const btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
             if (btn) btn.click();
-        }
+        }, 100);
         </script>
-        """,
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
 
 with st.sidebar:
     st.markdown("### 🧾 Inputs")
@@ -483,21 +480,18 @@ with st.sidebar:
         weekly_units = st.number_input("Weekly Baseline Units", 10, 10000, CATEGORY_PROFILES[category]["typical_weekly_units"])
     st.markdown("___")
 
-    st.markdown(
-        """
-        <style>
-        .sidebar-footer {
-            position: sticky;
-            bottom: 0;
-            background: rgba(15,23,42,0.95);
-            padding-top: 10px;
-            padding-bottom: 10px;
-            z-index: 999;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <style>
+    /* Sticky Analyze Button */
+    div[data-testid="stSidebar"] button[kind="primary"] {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 260px;
+        z-index: 9999;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.markdown('<div class="sidebar-footer">', unsafe_allow_html=True)
 
