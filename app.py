@@ -296,7 +296,7 @@ st.markdown("""
        MAIN HEADER
     ========================= */
     .main-header {
-        background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(51,65,85,0.7))
+        background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(51,65,85,0.7));
         padding: 2rem 2.5rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
@@ -340,6 +340,7 @@ st.markdown("""
 
     .rec-card p {
         color: rgba(51, 65, 85, 0.9);
+        font-size: 0.95rem;
     }
 
     /* =========================
@@ -448,70 +449,130 @@ with st.sidebar:
 
 def _generate_summary(result, inp):
     promo_price = inp.regular_price * (1 - inp.discount_pct / 100)
+
+    # Opener
     if "Don't" in result.recommendation:
         opener = (
-            f"**This promotion is not recommended.** At {inp.discount_pct}% off, "
-            f"**{inp.product_name}** is projected to lose money on a net basis."
+            f"<strong>This promotion is not recommended.</strong> At {inp.discount_pct}% off, "
+            f"<strong>{inp.product_name}</strong> is projected to lose money on a net basis."
         )
     elif "Run" in result.recommendation:
         opener = (
-            f"**This promotion is recommended.** Running {inp.discount_pct}% off on "
-            f"**{inp.product_name}** (${inp.regular_price:.2f} → ${promo_price:.2f}) "
+            f"<strong>This promotion is recommended.</strong> Running {inp.discount_pct}% off on "
+            f"<strong>{inp.product_name}</strong> (${inp.regular_price:.2f} → ${promo_price:.2f}) "
             f"for {inp.duration_days} days is projected to be profitable."
         )
-    elif "Caution" in result.recommendation:
-        opener = (
-            f"**This promotion warrants caution.** While {inp.discount_pct}% off "
-            f"on **{inp.product_name}** will drive traffic, several factors limit its effectiveness."
-        )
     else:
         opener = (
-            f"**This promotion is not recommended.** At {inp.discount_pct}% off, "
-            f"**{inp.product_name}** is projected to lose money on a net basis."
+            f"<strong>This promotion warrants caution.</strong> While {inp.discount_pct}% off "
+            f"on <strong>{inp.product_name}</strong> will drive traffic, several factors limit its effectiveness."
         )
+
+    # Volume
     vol = (
-        f"We project a **{result.volume_lift_pct:.0f}% volume lift** "
-        f"({result.baseline_units_per_week:,} → "
-        f"{result.projected_units_per_week:,} units/week). "
-        f"However, approximately **{result.cannibalization_pct:.0f}%** of incremental volume comes from cannibalization of adjacent products, "
-        f"leaving **{result.true_incremental_units:,} true incremental units**."
+        f"We project a <strong>{result.volume_lift_pct:.0f}% volume lift</strong> "
+        f"({result.baseline_units_per_week:,} → {result.projected_units_per_week:,} units/week). "
+        f"However, approximately <strong>{result.cannibalization_pct:.0f}%</strong> of incremental volume comes from "
+        f"cannibalization of adjacent products, leaving <strong>{result.true_incremental_units:,} true incremental units</strong>."
     )
+
+    # Profit
     if result.profit_change >= 0:
-        prof = f"During the promotion window, profit increases by **${result.profit_change:,.0f}**. "
+        prof = f"During the promotion window, profit increases by <strong>${result.profit_change:,.0f}</strong>. "
     else:
         prof = (
-            f"The promotion reduces profit by **${abs(result.profit_change):,.0f}** "
+            f"The promotion reduces profit by <strong>${abs(result.profit_change):,.0f}</strong> "
             f"during the promo period. "
         )
+
     if result.net_30day_profit_impact >= 0:
         prof += (
-            f"After factoring in the post-promotion sales dip ({result.post_promo_dip_pct:.0f}%), " 
-            f"the net 30-day impact remains positive at **${result.net_30day_profit_impact:,.0f}**."
+            f"After factoring in the post-promotion dip ({result.post_promo_dip_pct:.0f}%), "
+            f"the net 30-day impact remains positive at <strong>${result.net_30day_profit_impact:,.0f}</strong>."
         )
     else:
         prof += (
             f"The post-promotion dip ({result.post_promo_dip_pct:.0f}%) further erodes returns, "
-            f"bringing the 30-day net impact to **-${abs(result.net_30day_profit_impact):,.0f}**."
+            f"bringing the 30-day net impact to <strong>-${abs(result.net_30day_profit_impact):,.0f}</strong>."
         )
+
+    # Optimization
     sens = result.sensitivity_data
     best_idx = max(range(len(sens["net_30day_profit"])), key=lambda i: sens["net_30day_profit"][i])
     best_d = sens["discounts"][best_idx]
+
     if best_d != int(inp.discount_pct):
-        sn = f"💡 **Optimization insight:** Our sensitivity analysis suggests **{best_d}% off** would be the profit-maximizing discount for this product."
+        sn = (
+            f"💡 <strong>Optimization insight:</strong> Our sensitivity analysis suggests "
+            f"<strong>{best_d}% off</strong> would be the profit-maximizing discount."
+        )
     else:
-        sn = f"Your proposed {inp.discount_pct}% discount is well-calibrated — it's at or near the profit-optimal point for this product."
+        sn = (
+            f"💡 <strong>Optimization insight:</strong> Your proposed {inp.discount_pct}% discount "
+            f"is at or near the profit-optimal point."
+        )
+
     return f"""
         {opener}
     
         <div class="section-header">📈 Volume Impact</div>
-        {vol}
+        <p>{vol}</p>
     
         <div class="section-header">💰 Profit Impact</div>
-        {prof}
+        <p>{prof}</p>
     
         <div class="section-header">💡 Optimization Insight</div>
-        {sn}
+        <p>{sn}</p>
         """
+
+def _generate_reasoning(result, inp):
+    reasons = []
+
+    # Profit signal
+    if result.net_30day_profit_impact < 0:
+        reasons.append(
+            f"❌ Net 30-day profit impact is negative (<strong>-${abs(result.net_30day_profit_impact):,.0f}</strong>)"
+        )
+    else:
+        reasons.append(
+            f"✅ Net 30-day profit impact is positive (<strong>${result.net_30day_profit_impact:,.0f}</strong>)"
+        )
+
+    # Cannibalization
+    if result.cannibalization_pct > 20:
+        reasons.append(
+            f"⚠️ High cannibalization risk (<strong>{result.cannibalization_pct:.0f}%</strong> of volume)"
+        )
+    else:
+        reasons.append(
+            f"✅ Cannibalization is under control (<strong>{result.cannibalization_pct:.0f}%</strong>)"
+        )
+
+    # Volume quality
+    if result.true_incremental_units < result.incremental_units * 0.5:
+        reasons.append(
+            f"⚠️ Low true incremental gain (<strong>{result.true_incremental_units:,}</strong> units)"
+        )
+    else:
+        reasons.append(
+            f"✅ Strong incremental demand (<strong>{result.true_incremental_units:,}</strong> units)"
+        )
+
+    # Discount efficiency
+    sens = result.sensitivity_data
+    best_idx = max(range(len(sens["net_30day_profit"])), key=lambda i: sens["net_30day_profit"][i])
+    best_d = sens["discounts"][best_idx]
+
+    if best_d != int(inp.discount_pct):
+        reasons.append(
+            f"💡 Current discount ({inp.discount_pct}%) is suboptimal vs optimal (<strong>{best_d}%</strong>)"
+        )
+    else:
+        reasons.append(
+            f"✅ Discount is near optimal (<strong>{inp.discount_pct}%</strong>)"
+        )
+
+    return reasons
 
 
 if analyze_btn or "result" in st.session_state:
@@ -615,6 +676,17 @@ if analyze_btn or "result" in st.session_state:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(_generate_summary(result, inp), unsafe_allow_html=True)
 
+    # --- WHY THIS RECOMMENDATION ---
+    st.markdown('<div class="section-header">🧠 Why this recommendation?</div>', unsafe_allow_html=True)
+
+    reasons = _generate_reasoning(result, inp)
+
+    st.markdown("<div class='rec-card'>", unsafe_allow_html=True)
+    with st.expander("🧠 Why this recommendation?"):
+        for r in reasons:
+            st.markdown(f"<p style='margin:0.4rem 0'>{r}</p>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
 else:
     st.info("👈 Configure a promotion in the sidebar and click **Analyze Promotion** to get started.")
     c1, c2, c3 = st.columns(3)
@@ -622,4 +694,10 @@ else:
     with c2: st.markdown("#### 💰 Profit Impact\nUnderstand true profitability after accounting for margin erosion and execution costs.")
     with c3: st.markdown("#### ⚠️ Risk Analysis\nUncover hidden costs — cannibalization, pantry loading, and post-promo dips.")
     st.markdown("___")
-    st.markdown("**Price Sense AI** helps mid-market retailers ($50M–$500M revenue) make data-driven promotion decisions. Stop relying on gut feel — know the true ROI before you run.\n\n*Try it now with the reference scenario: 25% off Salted Pistachios 16oz →*")
+    st.markdown(
+        "<strong>Price Sense AI</strong> helps mid-market retailers "
+        "($50M–$500M revenue) make data-driven promotion decisions. "
+        "Stop relying on gut feel — know the true ROI before you run.<br><br>"
+        "<em>Try it now with the reference scenario: 25% off Salted Pistachios 16oz →</em>",
+        unsafe_allow_html=True
+    )
