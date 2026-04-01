@@ -296,14 +296,14 @@ st.markdown("""
        MAIN HEADER
     ========================= */
     .main-header {
-        background: linear-gradient(135deg, rgba(248,250,252,0.9), rgba(226,232,240,0.7));
+        background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(51,65,85,0.7))
         padding: 2rem 2.5rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
         border: 1px solid rgba(148,163,184,0.2);
     }
-    .main-header h1 { color: inherit; }
-    .main-header p { color: rgba(71, 85, 105, 0.9); }
+    .main-header h1 { color: #f8fafc;}
+    .main-header p { color: rgba(226,232,240,0.9); }
 
     .main-header .badge {
         display: inline-block;
@@ -348,7 +348,7 @@ st.markdown("""
     .section-header {
         font-size: 1.2rem;
         font-weight: 700;
-        color: rgba(226, 232, 240, 0.95);   /* FIX: visible in dark */
+        color: #e2e8f0;   /* FIX: visible in dark */
         margin: 1.5rem 0 0.8rem 0;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid rgba(148, 163, 184, 0.4);
@@ -449,22 +449,50 @@ with st.sidebar:
 def _generate_summary(result, inp):
     promo_price = inp.regular_price * (1 - inp.discount_pct / 100)
     if "Don't" in result.recommendation:
-        opener = f"**This promotion is not recommended.** At {inp.discount_pct}% off, **{inp.product_name}** is projected to lose money on a net basis."
+        opener = (
+            f"**This promotion is not recommended.** At {inp.discount_pct}% off, "
+            f"**{inp.product_name}** is projected to lose money on a net basis."
+        )
     elif "Run" in result.recommendation:
-        opener = f"**This promotion is recommended.** Running {inp.discount_pct}% off on **{inp.product_name}** (${inp.regular_price:.2f} → ${promo_price:.2f}) for {inp.duration_days} days is projected to be profitable."
+        opener = (
+            f"**This promotion is recommended.** Running {inp.discount_pct}% off on "
+            f"**{inp.product_name}** (${inp.regular_price:.2f} → ${promo_price:.2f}) "
+            f"for {inp.duration_days} days is projected to be profitable."
+        )
     elif "Caution" in result.recommendation:
-        opener = f"**This promotion warrants caution.** While {inp.discount_pct}% off on **{inp.product_name}** will drive traffic, several factors limit its effectiveness."
+        opener = (
+            f"**This promotion warrants caution.** While {inp.discount_pct}% off "
+            f"on **{inp.product_name}** will drive traffic, several factors limit its effectiveness."
+        )
     else:
-        opener = f"**This promotion is not recommended.** At {inp.discount_pct}% off, **{inp.product_name}** is projected to lose money on a net basis."
-    vol = f"We project a **{result.volume_lift_pct:.0f}% volume lift** ({result.baseline_units_per_week:,} → {result.projected_units_per_week:,} units/week). However, approximately **{result.cannibalization_pct:.0f}%** of incremental volume comes from cannibalization of adjacent products, leaving **{result.true_incremental_units:,} true incremental units**."
+        opener = (
+            f"**This promotion is not recommended.** At {inp.discount_pct}% off, "
+            f"**{inp.product_name}** is projected to lose money on a net basis."
+        )
+    vol = (
+        f"We project a **{result.volume_lift_pct:.0f}% volume lift** "
+        f"({result.baseline_units_per_week:,} → "
+        f"{result.projected_units_per_week:,} units/week). "
+        f"However, approximately **{result.cannibalization_pct:.0f}%** of incremental volume comes from cannibalization of adjacent products, "
+        f"leaving **{result.true_incremental_units:,} true incremental units**."
+    )
     if result.profit_change >= 0:
         prof = f"During the promotion window, profit increases by **${result.profit_change:,.0f}**. "
     else:
-        prof = f"The promotion reduces profit by **${abs(result.profit_change):,.0f}** during the promo period. "
+        prof = (
+            f"The promotion reduces profit by **${abs(result.profit_change):,.0f}** "
+            f"during the promo period. "
+        )
     if result.net_30day_profit_impact >= 0:
-        prof += f"After factoring in the post-promotion sales dip ({result.post_promo_dip_pct:.0f}%), the net 30-day impact remains positive at **${result.net_30day_profit_impact:,.0f}**."
+        prof += (
+            f"After factoring in the post-promotion sales dip ({result.post_promo_dip_pct:.0f}%), " 
+            f"the net 30-day impact remains positive at **${result.net_30day_profit_impact:,.0f}**."
+        )
     else:
-        prof += f"The post-promotion dip ({result.post_promo_dip_pct:.0f}%) further erodes returns, bringing the 30-day net impact to **-${abs(result.net_30day_profit_impact):,.0f}**."
+        prof += (
+            f"The post-promotion dip ({result.post_promo_dip_pct:.0f}%) further erodes returns, "
+            f"bringing the 30-day net impact to **-${abs(result.net_30day_profit_impact):,.0f}**."
+        )
     sens = result.sensitivity_data
     best_idx = max(range(len(sens["net_30day_profit"])), key=lambda i: sens["net_30day_profit"][i])
     best_d = sens["discounts"][best_idx]
@@ -475,19 +503,13 @@ def _generate_summary(result, inp):
     return f"""
         {opener}
     
-        ---
-    
-        ### 📈 Volume Impact
+        <div class="section-header">📈 Volume Impact</div>
         {vol}
     
-        ---
-    
-        ### 💰 Profit Impact
+        <div class="section-header">💰 Profit Impact</div>
         {prof}
     
-        ---
-    
-        ### 💡 Optimization Insight
+        <div class="section-header">💡 Optimization Insight</div>
         {sn}
         """
 
@@ -591,7 +613,7 @@ if analyze_btn or "result" in st.session_state:
     st.markdown("___")
     st.markdown('<div class="section-header">🤖 AI Executive Summary</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(_generate_summary(result, inp), unsafe_allow_html=False)
+    st.markdown(_generate_summary(result, inp), unsafe_allow_html=True)
 
 else:
     st.info("👈 Configure a promotion in the sidebar and click **Analyze Promotion** to get started.")
