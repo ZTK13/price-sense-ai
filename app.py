@@ -693,7 +693,7 @@ else:
     st.markdown("___")
     st.markdown(
         "<strong>Price Sense AI</strong> helps mid-market retailers "
-        "($50M - $500M revenue) "
+        "($50M — $500M revenue) "
         "make data-driven promotion decisions. "
         "Stop relying on gut feel — know the true ROI before you run.<br><br>"
         "<em>Try it now with the reference scenario: 25% off Salted Pistachios 16oz →</em>",
