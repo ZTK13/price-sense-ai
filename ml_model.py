@@ -5,13 +5,10 @@ import pandas as pd
 
 def train_model():
     df = generate_training_data()
-
     X = df.drop(columns=["profit"])
     y = df["profit"]
-
     model = RandomForestRegressor(n_estimators=50, max_depth=6)
     model.fit(X, y)
-
     return model, X.columns
 
 
@@ -26,7 +23,6 @@ def predict_with_model(model, feature_cols, inp):
         "display": int(inp.has_display_support),
         "peak": int(inp.is_peak_season),
     }])
-
     return model.predict(row[feature_cols])[0]
 
 
