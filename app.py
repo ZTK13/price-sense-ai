@@ -421,15 +421,25 @@ if analyze_btn or "result" in st.session_state:
     with col_mit:
         st.markdown('<div class="section-header">🛡️ Recommended Mitigations</div>', unsafe_allow_html=True)
         for i, m in enumerate(result.mitigations, 1):
-            st.markdown(f"<strong>{i}.</strong> {m}")
+            st.markdown(
+                f"<strong>{i}.</strong> {m}",
+                unsafe_allow_html=True
+            )
 
     # ── ML Prediction & Agreement ────────────────────────────────────────
     st.markdown("___")
     ml_col, feat_col = st.columns(2)
     with ml_col:
         st.markdown('<div class="section-header">🤖 ML Model Prediction</div>', unsafe_allow_html=True)
-        st.markdown(f"<strong>Simulation estimate:</strong> ${result.net_30day_profit_impact:,.0f}")
-        st.markdown(f"<strong>ML prediction:</strong> ${ml_profit:,.0f}")
+        st.markdown(
+            f"<strong>Simulation estimate:</strong> ${result.net_30day_profit_impact:,.0f}",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"<strong>ML prediction:</strong> ${ml_profit:,.0f}",
+            unsafe_allow_html=True
+        )
         diff = abs(result.net_30day_profit_impact - ml_profit)
         if diff > 200:
             st.warning("⚠️ Model and simulation strongly disagree — investigate scenario")
@@ -457,7 +467,7 @@ if analyze_btn or "result" in st.session_state:
     # ── AI Executive Summary ─────────────────────────────────────────────
     st.markdown("___")
     st.markdown('<div class="section-header">🧠 AI Executive Summary</div>', unsafe_allow_html=True)
-    st.markdown(_generate_summary(result, inp, ml_profit))
+    st.markdown(_generate_summary(result, inp, ml_profit), unsafe_allow_html=True)
 
     # ── Reset ────────────────────────────────────────────────────────────
     st.markdown("___")
