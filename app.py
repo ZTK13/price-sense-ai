@@ -292,21 +292,37 @@ st.set_page_config(page_title="Price Sense AI", page_icon="📊", layout="wide",
 
 st.markdown("""
 <style>
-    .main-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 2rem 2.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #334155; }
-    .main-header h1 { color: #f8fafc; font-size: 2rem; margin: 0; font-weight: 700; }
-    .main-header p { color: #94a3b8; font-size: 1.05rem; margin: 0.5rem 0 0 0; }
+    .main-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 2rem 2.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+    .main-header h1 {
+        color: #0f172a;
+    }
+    .main-header p {
+        color: #475569;
+    }
     .main-header .badge { display: inline-block; background: #3b82f6; color: white; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; vertical-align: middle; }
-    .rec-card { padding: 1.5rem 2rem; border-radius: 12px; margin: 1rem 0; border-left: 5px solid; }
+    .rec-card {
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border-left: 5px solid;
+        background: white;
+    }
     .rec-run { background: #f0fdf4; border-left-color: #22c55e; }
     .rec-caution { background: #fffbeb; border-left-color: #f59e0b; }
     .rec-stop { background: #fef2f2; border-left-color: #ef4444; }
     .rec-card h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; }
-    .rec-card p { margin: 0; color: #475569; font-size: 1rem; }
+    .rec-card p { margin: 0; color: #334155; font-size: 1rem; }
     .risk-item { display: flex; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; }
     .risk-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
     .risk-high { background: #ef4444; } .risk-med { background: #f59e0b; } .risk-low { background: #22c55e; }
     .section-header { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
+    #MainMenu {visibility: hidden;} header {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -318,9 +334,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 with st.sidebar:
+    st.markdown("### 🧾 Inputs")
     st.markdown("## 🎯 Promotion Setup")
     st.markdown("Configure your proposed promotion below.")
-    st.markdown("---")
+    st.markdown("___")
     st.markdown("#### Product Details")
     category = st.selectbox("Product Category", options=list(CATEGORY_PROFILES.keys()), index=1, help="Select the category that best fits your product")
     product_name = st.text_input("Product Name", value="Salted Pistachios 16oz", help="e.g., 'Organic Kombucha 12pk', 'Cheddar Cheese 8oz'")
@@ -329,12 +346,12 @@ with st.sidebar:
     margin_pct = None
     if custom_margin:
         margin_pct = st.slider("Product Margin %", 5, 70, int(CATEGORY_PROFILES[category]["base_margin"] * 100), help="Your actual margin on this product") / 100.0
-    st.markdown("---")
+    st.markdown("___")
     st.markdown("#### Promotion Details")
     promo_type = st.selectbox("Promotion Type", options=list(PROMO_TYPES.keys()), help="Type of promotional mechanic")
     discount_pct = st.slider("Discount %", 5, 50, 25, step=5, help="Depth of discount off regular price")
     duration_days = st.slider("Duration (days)", 1, 28, 7, help="How long will the promotion run?")
-    st.markdown("---")
+    st.markdown("___")
     st.markdown("#### Market Context")
     num_competing = st.slider("Competing Products in Category", 0, 15, 4, help="How many similar products compete for the same shopper?")
     is_peak = st.checkbox("Peak Season?", value=False, help="Is this a high-demand period (holidays, summer, etc.)?")
@@ -343,13 +360,15 @@ with st.sidebar:
     weekly_units = None
     if custom_baseline:
         weekly_units = st.number_input("Weekly Baseline Units", 10, 10000, CATEGORY_PROFILES[category]["typical_weekly_units"])
-    st.markdown("---")
+    st.markdown("___")
     analyze_btn = st.button("🚀 Analyze Promotion", use_container_width=True, type="primary")
 
 
 def _generate_summary(result, inp):
     promo_price = inp.regular_price * (1 - inp.discount_pct / 100)
-    if "Run" in result.recommendation:
+    if "Don't" in result.recommendation:
+        opener = f"**This promotion is not recommended.** At {inp.discount_pct}% off, **{inp.product_name}** is projected to lose money on a net basis."
+    elif "Run" in result.recommendation:
         opener = f"**This promotion is recommended.** Running {inp.discount_pct}% off on **{inp.product_name}** (${inp.regular_price:.2f} → ${promo_price:.2f}) for {inp.duration_days} days is projected to be profitable."
     elif "Caution" in result.recommendation:
         opener = f"**This promotion warrants caution.** While {inp.discount_pct}% off on **{inp.product_name}** will drive traffic, several factors limit its effectiveness."
@@ -371,7 +390,24 @@ def _generate_summary(result, inp):
         sn = f"💡 **Optimization insight:** Our sensitivity analysis suggests **{best_d}% off** would be the profit-maximizing discount for this product."
     else:
         sn = f"Your proposed {inp.discount_pct}% discount is well-calibrated — it's at or near the profit-optimal point for this product."
-    return f"{opener}\n\n{vol}\n\n{prof}\n\n{sn}"
+    return f"""
+        {opener}
+    
+        ---
+    
+        ### 📈 Volume Impact
+        {vol}
+    
+        ---
+    
+        ### 💰 Profit Impact
+        {prof}
+    
+        ---
+    
+        ### 💡 Optimization Insight
+        {sn}
+        """
 
 
 if analyze_btn or "result" in st.session_state:
@@ -385,10 +421,11 @@ if analyze_btn or "result" in st.session_state:
         result = st.session_state["result"]
         inp = st.session_state["inp"]
 
-    css_class = "rec-run" if "Run" in result.recommendation else "rec-caution" if "Caution" in result.recommendation else "rec-stop"
+    css_class = "rec-stop" if "Don't" in result.recommendation else "rec-run" if "Run" in result.recommendation else "rec-caution"
     st.markdown(f'<div class="rec-card {css_class}"><h2>{result.recommendation}</h2><p><strong>Confidence:</strong> {result.confidence_score}% · {result.recommendation_reason}</p></div>', unsafe_allow_html=True)
 
     promo_price = inp.regular_price * (1 - inp.discount_pct / 100)
+    st.markdown("### 📊 Key Metrics")
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.metric("Volume Lift", f"+{result.volume_lift_pct}%", f"{result.true_incremental_units:,} true incremental units")
     with c2: st.metric("Promo Profit Impact", f"{'+'if result.profit_change>0 else ''}${result.profit_change:,.0f}", f"ROI: {result.roi:.0f}%")
@@ -397,7 +434,7 @@ if analyze_btn or "result" in st.session_state:
         rl = "Low" if result.risk_score < 30 else "Medium" if result.risk_score < 60 else "High"
         st.metric("Risk Score", f"{result.risk_score:.0f}/100", rl, delta_color="inverse")
 
-    st.markdown("---")
+    st.markdown("___")
     tab1, tab2, tab3, tab4 = st.tabs(["📈 Volume Forecast", "💰 Profit Waterfall", "🔍 Sensitivity Analysis", "📊 Full Breakdown"])
 
     with tab1:
@@ -407,7 +444,13 @@ if analyze_btn or "result" in st.session_state:
         fig = go.Figure()
         fig.add_trace(go.Bar(x=df_f["week"], y=df_f["units"], marker_color=[colors[p] for p in df_f["phase"]], text=df_f["units"], textposition="outside", textfont=dict(size=12, color="#334155")))
         fig.add_hline(y=result.baseline_units_per_week, line_dash="dash", line_color="#94a3b8", annotation_text="Baseline", annotation_position="top right")
-        fig.update_layout(height=400, plot_bgcolor="white", xaxis=dict(title="", tickfont=dict(size=12)), yaxis=dict(title="Units / Week", gridcolor="#f1f5f9"), margin=dict(l=60, r=20, t=30, b=40), showlegend=False)
+        fig.update_layout(height=400,
+                          plot_bgcolor="white",
+                          xaxis=dict(title="", tickfont=dict(size=12)),
+                          yaxis=dict(title="Units / Week", gridcolor="#f1f5f9"),
+                          margin=dict(l=60, r=20, t=30, b=40),
+                          font=dict(color="#0f172a"),
+                          showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
         st.caption(f"📌 Baseline: {result.baseline_units_per_week:,} units/wk · During promo: {result.projected_units_per_week:,} units/wk · Cannibalized: {result.cannibalized_units:,} units ({result.cannibalization_pct:.0f}%)")
 
@@ -448,7 +491,7 @@ if analyze_btn or "result" in st.session_state:
             st.markdown("##### 💵 Financial Analysis")
             st.dataframe(pd.DataFrame({"Metric": ["Regular Price", "Promo Price", "Baseline Revenue", "Promo Revenue", "Revenue Change", "Baseline Profit", "Promo Profit", "Profit Change", "Net 30-Day Impact", "Pantry Loading Effect", "Post-Promo Dip"], "Value": [f"${inp.regular_price:.2f}", f"${promo_price:.2f}", f"${result.regular_revenue:,.2f}", f"${result.promo_revenue:,.2f}", f"${result.revenue_change:,.2f}", f"${result.regular_profit:,.2f}", f"${result.promo_profit:,.2f}", f"${result.profit_change:,.2f}", f"${result.net_30day_profit_impact:,.2f}", f"{result.pantry_loading_pct:.1f}%", f"{result.post_promo_dip_pct:.1f}%"]}), hide_index=True, use_container_width=True)
 
-    st.markdown("---")
+    st.markdown("___")
     cr2, cm = st.columns(2)
     with cr2:
         st.markdown('<div class="section-header">⚠️ Risk Factors</div>', unsafe_allow_html=True)
@@ -463,15 +506,15 @@ if analyze_btn or "result" in st.session_state:
         for i, m in enumerate(result.mitigations, 1):
             st.markdown(f"**{i}.** {m}")
 
-    st.markdown("---")
+    st.markdown("___")
     st.markdown('<div class="section-header">🤖 AI Executive Summary</div>', unsafe_allow_html=True)
-    st.markdown(_generate_summary(result, inp))
+    st.markdown(_generate_summary(result, inp), unsafe_allow_html=False)
 
 else:
-    st.markdown("### 👈 Configure a promotion in the sidebar and click **Analyze**")
+    st.info("👈 Configure a promotion in the sidebar and click **Analyze Promotion** to get started.")
     c1, c2, c3 = st.columns(3)
     with c1: st.markdown("#### 📈 Volume Lift\nSee projected sales increase based on price elasticity and category dynamics.")
     with c2: st.markdown("#### 💰 Profit Impact\nUnderstand true profitability after accounting for margin erosion and execution costs.")
     with c3: st.markdown("#### ⚠️ Risk Analysis\nUncover hidden costs — cannibalization, pantry loading, and post-promo dips.")
-    st.markdown("---")
+    st.markdown("___")
     st.markdown("**Price Sense AI** helps mid-market retailers ($50M–$500M revenue) make data-driven promotion decisions. Stop relying on gut feel — know the true ROI before you run.\n\n*Try it now with the reference scenario: 25% off Salted Pistachios 16oz →*")
