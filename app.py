@@ -410,11 +410,49 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
+<style>
+.float-toggle {
+    position: fixed;
+    top: 80px;
+    left: 10px;
+    z-index: 1000;
+    background: #1e293b;
+    color: white;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    border: 1px solid rgba(148,163,184,0.3);
+}
+</style>
+
+<div class="float-toggle" onclick="
+    const btn = window.parent.document.querySelector('[data-testid=\"collapsedControl\"]');
+    if (btn) btn.click();
+">
+☰
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
 <div class="main-header">
     <h1>📊 Price Sense AI <span class="badge">BETA</span></h1>
     <p>Should you run this promotion? Get AI-powered analysis of projected lift, cannibalization, profit impact, and risk — in seconds.</p>
 </div>
 """, unsafe_allow_html=True)
+
+def collapse_sidebar():
+    st.markdown(
+        """
+        <script>
+        const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar && sidebar.getAttribute("aria-expanded") === "true") {
+            const btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
+            if (btn) btn.click();
+        }
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
 
 with st.sidebar:
     st.markdown("### 🧾 Inputs")
@@ -444,7 +482,32 @@ with st.sidebar:
     if custom_baseline:
         weekly_units = st.number_input("Weekly Baseline Units", 10, 10000, CATEGORY_PROFILES[category]["typical_weekly_units"])
     st.markdown("___")
-    analyze_btn = st.button("🚀 Analyze Promotion", use_container_width=True, type="primary")
+
+    st.markdown(
+        """
+        <style>
+        .sidebar-footer {
+            position: sticky;
+            bottom: 0;
+            background: rgba(15,23,42,0.95);
+            padding-top: 10px;
+            padding-bottom: 10px;
+            z-index: 999;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="sidebar-footer">', unsafe_allow_html=True)
+
+    analyze_btn = st.button(
+        "🚀 Analyze Promotion",
+        use_container_width=True,
+        type="primary"
+    )
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def _generate_summary(result, inp):
@@ -582,9 +645,14 @@ if analyze_btn or "result" in st.session_state:
         result = sim.analyze(inp)
         st.session_state["result"] = result
         st.session_state["inp"] = inp
+        collapse_sidebar()
     else:
         result = st.session_state["result"]
         inp = st.session_state["inp"]
+
+    if st.button("← Back to Home"):
+        st.session_state.clear()
+        st.rerun()
 
     css_class = "rec-stop" if "Don't" in result.recommendation else "rec-run" if "Run" in result.recommendation else "rec-caution"
     st.markdown(f'<div class="rec-card {css_class}"><h2>{result.recommendation}</h2><p><strong>Confidence:</strong> {result.confidence_score}% · {result.recommendation_reason}</p></div>', unsafe_allow_html=True)

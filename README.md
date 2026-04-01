@@ -45,11 +45,6 @@ The app will open at `http://localhost:8501`.
 ```
 price-sense-ai/
 ├── app.py                    # Main Streamlit UI
-├── engine/
-│   ├── __init__.py
-│   └── simulation.py         # Core analytics engine
-├── .streamlit/
-│   └── config.toml           # Theme configuration
 ├── requirements.txt
 └── README.md
 ```
