@@ -292,6 +292,9 @@ st.set_page_config(page_title="Price Sense AI", page_icon="📊", layout="wide",
 
 st.markdown("""
 <style>
+    /* =========================
+       MAIN HEADER
+    ========================= */
     .main-header {
         background: linear-gradient(135deg, rgba(248,250,252,0.9), rgba(226,232,240,0.7));
         padding: 2rem 2.5rem;
@@ -299,13 +302,24 @@ st.markdown("""
         margin-bottom: 1.5rem;
         border: 1px solid rgba(148,163,184,0.2);
     }
-    .main-header h1 {
-        color: inherit;
+    .main-header h1 { color: inherit; }
+    .main-header p { color: rgba(71, 85, 105, 0.9); }
+
+    .main-header .badge {
+        display: inline-block;
+        background: #3b82f6;
+        color: white;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        vertical-align: middle;
     }
-    .main-header p {
-        color: rgba(71, 85, 105, 0.9);
-    }
-    .main-header .badge { display: inline-block; background: #3b82f6; color: white; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; vertical-align: middle; }
+
+    /* =========================
+       RECOMMENDATION CARDS
+    ========================= */
     .rec-card {
         padding: 1.5rem 2rem;
         border-radius: 12px;
@@ -314,23 +328,83 @@ st.markdown("""
         background: rgba(255,255,255,0.7);
         backdrop-filter: blur(4px);
     }
+
     .rec-run { background: rgba(34,197,94,0.08); border-left-color: #22c55e; }
     .rec-caution { background: rgba(245,158,11,0.08); border-left-color: #f59e0b; }
     .rec-stop { background: rgba(239,68,68,0.08); border-left-color: #ef4444; }
-    .rec-card h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; }
-    .rec-card p { color: rgba(51, 65, 85, 0.9); }
-    .risk-item { display: flex; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(148,163,184,0.2); }
-    .risk-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
-    .risk-high { background: #ef4444; } .risk-med { background: #f59e0b; } .risk-low { background: #22c55e; }
+
+    .rec-card h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+    }
+
+    .rec-card p {
+        color: rgba(51, 65, 85, 0.9);
+    }
+
+    /* =========================
+       SECTION HEADERS
+    ========================= */
     .section-header {
-        font-size: 1.15rem;
+        font-size: 1.2rem;
         font-weight: 700;
-        color: rgba(15, 23, 42, 0.9);
+        color: rgba(226, 232, 240, 0.95);   /* FIX: visible in dark */
         margin: 1.5rem 0 0.8rem 0;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.4);
     }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
+
+    /* Light mode override */
+    @media (prefers-color-scheme: light) {
+        .section-header {
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+        }
+    }
+
+    /* =========================
+       RISK ITEMS
+    ========================= */
+    .risk-item {
+        display: flex;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid rgba(148,163,184,0.2);
+    }
+
+    .risk-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .risk-high { background: #ef4444; }
+    .risk-med { background: #f59e0b; }
+    .risk-low { background: #22c55e; }
+
+    /* =========================
+       CAPTION FIX (DARK MODE)
+    ========================= */
+    .stCaption {
+        color: rgba(203, 213, 225, 0.9);
+    }
+
+    /* =========================
+       TAB LABEL VISIBILITY
+    ========================= */
+    button[data-baseweb="tab"] {
+        font-weight: 600;
+    }
+
+    /* =========================
+       CLEANUP
+    ========================= */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {display: none;}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -450,7 +524,7 @@ if analyze_btn or "result" in st.session_state:
         df_f = pd.DataFrame(result.weekly_volume_forecast)
         colors = {"Baseline": "#94a3b8", "Promotion": "#3b82f6", "Post-Promo": "#f59e0b"}
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=df_f["week"], y=df_f["units"], marker_color=[colors[p] for p in df_f["phase"]], text=df_f["units"], textposition="outside", textfont=dict(size=12, color="#334155")))
+        fig.add_trace(go.Bar(x=df_f["week"], y=df_f["units"], marker_color=[colors[p] for p in df_f["phase"]], text=df_f["units"], textposition="outside", textfont=dict(size=12)))
         fig.add_hline(y=result.baseline_units_per_week, line_dash="dash", line_color="#94a3b8", annotation_text="Baseline", annotation_position="top right")
         fig.update_layout(height=400,
                           plot_bgcolor="white",
@@ -506,7 +580,7 @@ if analyze_btn or "result" in st.session_state:
         if result.risk_factors:
             for factor, severity in result.risk_factors:
                 dc = "risk-high" if severity >= 20 else "risk-med" if severity >= 10 else "risk-low"
-                st.markdown(f'<div class="risk-item"><div class="risk-dot {dc}"></div><span>{factor} <em style="color:#94a3b8">(+{severity} risk pts)</em></span></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="risk-item"><div class="risk-dot {dc}"></div><span>{factor} <em style="color:rgba(148,163,184,0.9)">(+{severity} risk pts)</em></span></div>', unsafe_allow_html=True)
         else:
             st.success("No significant risk factors identified.")
     with cm:
