@@ -293,17 +293,17 @@ st.set_page_config(page_title="Price Sense AI", page_icon="📊", layout="wide",
 st.markdown("""
 <style>
     .main-header {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, rgba(248,250,252,0.9), rgba(226,232,240,0.7));
         padding: 2rem 2.5rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid rgba(148,163,184,0.2);
     }
     .main-header h1 {
-        color: #0f172a;
+        color: inherit;
     }
     .main-header p {
-        color: #475569;
+        color: rgba(71, 85, 105, 0.9);
     }
     .main-header .badge { display: inline-block; background: #3b82f6; color: white; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; vertical-align: middle; }
     .rec-card {
@@ -311,17 +311,25 @@ st.markdown("""
         border-radius: 12px;
         margin: 1rem 0;
         border-left: 5px solid;
-        background: white;
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(4px);
     }
-    .rec-run { background: #f0fdf4; border-left-color: #22c55e; }
-    .rec-caution { background: #fffbeb; border-left-color: #f59e0b; }
-    .rec-stop { background: #fef2f2; border-left-color: #ef4444; }
+    .rec-run { background: rgba(34,197,94,0.08); border-left-color: #22c55e; }
+    .rec-caution { background: rgba(245,158,11,0.08); border-left-color: #f59e0b; }
+    .rec-stop { background: rgba(239,68,68,0.08); border-left-color: #ef4444; }
     .rec-card h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; }
-    .rec-card p { margin: 0; color: #334155; font-size: 1rem; }
-    .risk-item { display: flex; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; }
+    .rec-card p { color: rgba(51, 65, 85, 0.9); }
+    .risk-item { display: flex; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(148,163,184,0.2); }
     .risk-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
     .risk-high { background: #ef4444; } .risk-med { background: #f59e0b; } .risk-low { background: #22c55e; }
-    .section-header { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
+    .section-header {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: rgba(15, 23, 42, 0.9);
+        margin: 1.5rem 0 0.8rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+    }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
 </style>
 """, unsafe_allow_html=True)
@@ -425,7 +433,7 @@ if analyze_btn or "result" in st.session_state:
     st.markdown(f'<div class="rec-card {css_class}"><h2>{result.recommendation}</h2><p><strong>Confidence:</strong> {result.confidence_score}% · {result.recommendation_reason}</p></div>', unsafe_allow_html=True)
 
     promo_price = inp.regular_price * (1 - inp.discount_pct / 100)
-    st.markdown("### 📊 Key Metrics")
+    st.markdown("## 📊 Key Metrics")
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.metric("Volume Lift", f"+{result.volume_lift_pct}%", f"{result.true_incremental_units:,} true incremental units")
     with c2: st.metric("Promo Profit Impact", f"{'+'if result.profit_change>0 else ''}${result.profit_change:,.0f}", f"ROI: {result.roi:.0f}%")
@@ -449,7 +457,7 @@ if analyze_btn or "result" in st.session_state:
                           xaxis=dict(title="", tickfont=dict(size=12)),
                           yaxis=dict(title="Units / Week", gridcolor="#f1f5f9"),
                           margin=dict(l=60, r=20, t=30, b=40),
-                          font=dict(color="#0f172a"),
+                          font=dict(color=None),
                           showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
         st.caption(f"📌 Baseline: {result.baseline_units_per_week:,} units/wk · During promo: {result.projected_units_per_week:,} units/wk · Cannibalized: {result.cannibalized_units:,} units ({result.cannibalization_pct:.0f}%)")
@@ -508,6 +516,7 @@ if analyze_btn or "result" in st.session_state:
 
     st.markdown("___")
     st.markdown('<div class="section-header">🤖 AI Executive Summary</div>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(_generate_summary(result, inp), unsafe_allow_html=False)
 
 else:
