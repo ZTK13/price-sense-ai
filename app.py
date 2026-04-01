@@ -673,7 +673,6 @@ if analyze_btn or "result" in st.session_state:
 
     st.markdown("___")
     st.markdown('<div class="section-header">🤖 AI Executive Summary</div>', unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(_generate_summary(result, inp), unsafe_allow_html=True)
 
     # --- WHY THIS RECOMMENDATION ---
@@ -681,11 +680,9 @@ if analyze_btn or "result" in st.session_state:
 
     reasons = _generate_reasoning(result, inp)
 
-    st.markdown("<div class='rec-card'>", unsafe_allow_html=True)
-    with st.expander("🧠 Why this recommendation?"):
+    with st.expander("🧠 Why this recommendation?", expanded=True):
         for r in reasons:
             st.markdown(f"<p style='margin:0.4rem 0'>{r}</p>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     st.info("👈 Configure a promotion in the sidebar and click **Analyze Promotion** to get started.")
@@ -696,7 +693,8 @@ else:
     st.markdown("___")
     st.markdown(
         "<strong>Price Sense AI</strong> helps mid-market retailers "
-        "($50M–$500M revenue) make data-driven promotion decisions. "
+        "($50M–$500M revenue) "
+        "make data-driven promotion decisions. "
         "Stop relying on gut feel — know the true ROI before you run.<br><br>"
         "<em>Try it now with the reference scenario: 25% off Salted Pistachios 16oz →</em>",
         unsafe_allow_html=True
