@@ -3,6 +3,10 @@ Price Sense AI — Should You Run This Promotion?
 An AI-powered promotion analysis tool for mid-market retailers.
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -630,4 +634,3 @@ else:
     
     *Try it now with the reference scenario: 25% off Salted Pistachios 16oz →*
     """)
-
