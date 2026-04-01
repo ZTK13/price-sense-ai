@@ -322,7 +322,7 @@ st.markdown("""
     .risk-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
     .risk-high { background: #ef4444; } .risk-med { background: #f59e0b; } .risk-low { background: #22c55e; }
     .section-header { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
-    #MainMenu {visibility: hidden;} header {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} .stDeployButton {display: none;}
 </style>
 """, unsafe_allow_html=True)
 
