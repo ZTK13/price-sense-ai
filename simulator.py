@@ -277,7 +277,7 @@ class PromotionSimulator:
         for d in discounts:
             elas_lo, elas_hi = profile["elasticity_range"]
             comp_f = min(1.0, 0.5 + inp.num_competing_products * 0.1)
-            elas = elas_lo + (elas_hi - elas_lo) * (1 - comp_f)
+            elas = elas_lo + (elas_hi - elas_lo) * (1 - comp_f) + self.rng.normal(0, 0.1)
             df = d / 100.0; lift = -elas * df
             if inp.is_peak_season: lift *= 1.15 + profile["seasonality_amplitude"]
             if inp.has_display_support: lift *= 1.25

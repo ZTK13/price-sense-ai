@@ -23,6 +23,7 @@ def randomize_inputs():
 
 
 def generate_training_data(n=2000):
+    np.random.seed(42)
     sim = PromotionSimulator()
     rows = []
     for _ in range(n):

@@ -6,6 +6,8 @@
 
 **Live demo:** https://gd1302-price-sense-ai.streamlit.app/
 
+**Write-up:** [WRITEUP.md](WRITEUP.md) — design decisions, architecture, and case study write-up
+
 ## Quick Start (Local)
 
 ```bash
@@ -22,26 +24,6 @@ streamlit run app.py
 
 The app will open at `http://localhost:8501`.
 
-## Deploy to Streamlit Cloud (Free)
-
-1. **Push to GitHub**: Create a new repo and push this code
-   ```bash
-   git init
-   git add .
-   git commit -m "Price Sense AI v1"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/price-sense-ai.git
-   git push -u origin main
-   ```
-
-2. **Go to [share.streamlit.io](https://share.streamlit.io)**
-   - Sign in with GitHub
-   - Click "New app"
-   - Select your repo → branch `main` → file `app.py`
-   - Click "Deploy"
-
-3. **Done!** Your app will be live at `https://YOUR_USERNAME-price-sense-ai.streamlit.app`
-
 ## Project Structure
 
 ```
@@ -51,7 +33,8 @@ price-sense-ai/
 ├── ml_model.py               # RandomForest cross-validation layer
 ├── data_utils.py             # Synthetic training data generator
 ├── requirements.txt
-└── README.md
+├── README.md
+└── WRITEUP.md                # Design decisions, architecture, and case study write-up
 ```
 
 ## How It Works
@@ -64,6 +47,7 @@ The simulation engine uses established retail economics principles:
 - **Profit Waterfall**: Full financial breakdown from baseline → volume lift → discount cost → cannibalization → net impact
 - **Sensitivity Analysis**: Sweeps discount levels to find the profit-optimal point
 - **Risk Scoring**: Multi-factor risk assessment with actionable mitigations
+- **ML Cross-Check**: A RandomForest model trained on 2,000 synthetic scenarios provides an independent estimate to validate the simulation output
 
 ## Supported Categories
 
@@ -74,6 +58,7 @@ Grocery, Specialty Food & Nuts, Beverages, Snacks & Confectionery, Dairy & Refri
 - **Frontend**: Streamlit (Python)
 - **Visualization**: Plotly
 - **Analytics**: NumPy, Pandas
+- **ML**: scikit-learn (RandomForestRegressor)
 - **Deployment**: Streamlit Cloud
 
 ---

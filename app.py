@@ -141,16 +141,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Sidebar Inputs ───────────────────────────────────────────────────────────
-def collapse_sidebar():
-    st.markdown("""
-        <script>
-        setTimeout(() => {
-            const btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
-            if (btn) btn.click();
-        }, 100);
-        </script>
-    """, unsafe_allow_html=True)
-
 with st.sidebar:
     st.markdown("## 🎯 Promotion Setup")
     st.markdown("___")
@@ -221,7 +211,7 @@ def _generate_summary(result, inp, ml_profit):
             f"after accounting for the {result.post_promo_dip_pct:.0f}% post-promo dip."
         )
 
-    ml_note = f"Our ML model independently predicts <strong>${ml_profit:,.0f}</strong> net profit for this scenario."
+    ml_note = f"Our ML model also estimates <strong>${ml_profit:,.0f}</strong> net profit for this scenario."
 
     # Sensitivity
     sens = result.sensitivity_data
