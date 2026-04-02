@@ -385,7 +385,7 @@ if analyze_btn or "result" in st.session_state:
             c1.metric(
                 "Optimal Discount",
                 f"{best_d}%",
-                delta=f"${delta_optimal:,.0f}"
+                delta=delta_optimal
             )
             c1.caption(f"Profit: ${best_p:,.0f}")
 
@@ -393,7 +393,7 @@ if analyze_btn or "result" in st.session_state:
             c2.metric(
                 "Current Discount",
                 f"{cd}%",
-                delta=f"${delta_current:,.0f}"
+                delta=delta_current
             )
             c2.caption(f"Profit: ${current_profit:,.0f}")
         else:
