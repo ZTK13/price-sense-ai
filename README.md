@@ -4,11 +4,13 @@
 
 > "Should I run this promotion?" — answered in seconds with projected lift, cannibalization impact, profit estimate, and risk analysis.
 
+**Live demo:** https://gd1302-price-sense-ai.streamlit.app/
+
 ## Quick Start (Local)
 
 ```bash
 # 1. Clone or download this repo
-git clone https://github.com/YOUR_USERNAME/price-sense-ai.git
+git clone https://github.com/ZTK13/price-sense-ai.git
 cd price-sense-ai
 
 # 2. Install dependencies
@@ -45,6 +47,9 @@ The app will open at `http://localhost:8501`.
 ```
 price-sense-ai/
 ├── app.py                    # Main Streamlit UI
+├── simulator.py              # Simulation engine (elasticity, cannibalization, waterfall, risk)
+├── ml_model.py               # RandomForest cross-validation layer
+├── data_utils.py             # Synthetic training data generator
 ├── requirements.txt
 └── README.md
 ```
