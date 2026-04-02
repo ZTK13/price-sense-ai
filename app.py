@@ -477,7 +477,7 @@ if analyze_btn or "result" in st.session_state:
 
 else:
     # ── Landing State ────────────────────────────────────────────────────
-    st.markdown("### 👈 Configure a promotion in the sidebar and click <strong>Analyze</strong>")
+    st.markdown("### 👈 Configure a promotion in the sidebar and click **Analyze**")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("#### 📈 Volume Lift\nProjected sales increase using price elasticity and category dynamics.")
