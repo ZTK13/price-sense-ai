@@ -49,7 +49,7 @@ The goal was to build something that feels complete for the core decision, not a
 ```
 ┌─────────────────────────────────────────┐
 │           Streamlit Frontend            │
-│  (app.py — sidebar inputs, charts, UI) │
+│  (app.py — sidebar inputs, charts, UI)  │
 └────────────────┬────────────────────────┘
                  │
 ┌────────────────▼────────────────────────┐
@@ -63,7 +63,7 @@ The goal was to build something that feels complete for the core decision, not a
 │  └──────────────┘  └─────────────────┘  │
 │                                         │
 │  PromotionInput → PromotionSimulator    │
-│                   → PromotionResult     │
+│                 → PromotionResult       │
 │                                         │
 │  Components:                            │
 │  - Price elasticity calculator          │
@@ -86,9 +86,9 @@ The goal was to build something that feels complete for the core decision, not a
 
 ```
 ┌──────────────┐     ┌───────────────┐     ┌──────────────────┐
-│  React/Next  │────▶│  FastAPI      │────▶│  ML Pipeline     │
-│  Frontend    │◀────│  Backend      │◀────│  (Airflow/       │
-│              │     │               │     │   Prefect)        │
+│  React/Next  │────▶│  FastAPI     │────▶│  ML Pipeline     │
+│  Frontend    │◀────│  Backend     │◀────│  (Airflow/       │
+│              │     │               │     │   Prefect)       │
 └──────────────┘     └───────┬───────┘     └────────┬─────────┘
                              │                      │
                      ┌───────▼───────┐      ┌───────▼─────────┐

@@ -78,4 +78,5 @@ Grocery, Specialty Food & Nuts, Beverages, Snacks & Confectionery, Dairy & Refri
 
 ---
 
-Built as a case study submission demonstrating AI-partnered product development.
+Built as a case study submission demonstrating AI-partnered product development. 
+See the [problem statement](trinamix_case_study.pdf) and [writeup](WRITEUP.md) for more details.
