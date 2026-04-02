@@ -375,9 +375,27 @@ if analyze_btn or "result" in st.session_state:
             current_profit = sens['net_30day_profit'][sens['discounts'].index(cd)]
             st.markdown("### 💡 Discount Optimization")
 
+            # relative comparison
+            delta_optimal = best_p - current_profit
+            delta_current = current_profit - best_p
+
             c1, c2 = st.columns(2)
-            c1.metric("Optimal Discount", f"{best_d}%", f"${best_p:,.0f}")
-            c2.metric("Current Discount", f"{cd}%", f"${current_profit:,.0f}")
+
+            # Optimal (should be green if better than current)
+            c1.metric(
+                "Optimal Discount",
+                f"{best_d}%",
+                delta=f"${delta_optimal:,.0f}"
+            )
+            c1.caption(f"Profit: ${best_p:,.0f}")
+
+            # Current (should be red if worse)
+            c2.metric(
+                "Current Discount",
+                f"{cd}%",
+                delta=f"${delta_current:,.0f}"
+            )
+            c2.caption(f"Profit: ${current_profit:,.0f}")
         else:
             st.success(f"✅ Your {cd}% discount is at or near the profit-optimal point.")
 
