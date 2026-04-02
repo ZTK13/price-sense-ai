@@ -372,12 +372,12 @@ if analyze_btn or "result" in st.session_state:
         best_idx = max(range(len(sens["net_30day_profit"])), key=lambda i: sens["net_30day_profit"][i])
         best_d = sens["discounts"][best_idx]; best_p = sens["net_30day_profit"][best_idx]
         if best_d != cd:
-            st.info(
-                f"💡 **Optimal discount: {best_d}%** "
-                f"→ ${best_p:,.0f} net profit. "
-                f"Your {cd}% yields "
-                f"${sens['net_30day_profit'][sens['discounts'].index(cd)]:,.0f}."
-            )
+            current_profit = sens['net_30day_profit'][sens['discounts'].index(cd)]
+            st.markdown("### 💡 Discount Optimization")
+
+            c1, c2 = st.columns(2)
+            c1.metric("Optimal Discount", f"{best_d}%", f"${best_p:,.0f}")
+            c2.metric("Current Discount", f"{cd}%", f"${current_profit:,.0f}")
         else:
             st.success(f"✅ Your {cd}% discount is at or near the profit-optimal point.")
 
